@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="grid two-columns">
+  <div>
+    <h2>Add expense</h2>
+    <form action="/add" method="post" class="card">
+
+      <label>Title</label>
+      <input type="text" name="title" placeholder="e.g., Lunch at cafe" required>
+
+      <label>Amount (₹)</label>
+      <input type="number" step="0.01" name="amount" placeholder="e.g., 250" required>
+
+      <label>Category</label>
+      <select name="category" required>
+        <option>Food</option>
+        <option>Travel</option>
+        <option>Shopping</option>
+        <option>Stock</option>
+        <option>Delivery</option>
+        <option>Other</option>
+      </select>
+
+      <label>Date</label>
+      <input type="date" name="expense_date" required>
+
+      <button type="submit">Add</button>
+    </form>
+  </div>
+
+  <div>
+    <h2>Summary</h2>
+    <div class="card">
+      <p><strong>Total:</strong> ₹{{ "%.2f"|format(summary.total or 0) }}</p>
+
+      <canvas id="pieChart" height="200"></canvas>
+      <canvas id="barChart" height="200" style="margin-top: 20px;"></canvas>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>All expenses</h2>
+  <div class="card">
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Title</th>
+          <th>Category</th>
+          <th>Amount (₹)</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in expenses %}
+        <tr>
+          <td>{{ e.expense_date }}</td>
+          <td>{{ e.title }}</td>
+          <td>{{ e.category }}</td>
+          <td>{{ "%.2f"|format(e.amount) }}</td>
+          <td>
+            <form action="/delete/{{ e.id }}" method="post" onsubmit="return confirm('Delete this expense?');">
+              <button type="submit">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- Load Chart.js (if not already in base.html) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  // Data from backend
+  const catLabels = {{ summary.cat_labels | tojson }};
+  const catValues = {{ summary.cat_values | tojson }};
+  const monthLabels = {{ summary.month_labels | tojson }};
+  const monthValues = {{ summary.month_values | tojson }};
+
+  // Pie chart (by category)
+  new Chart(document.getElementById('pieChart'), {
+    type: 'pie',
+    data: {
+      labels: catLabels,
+      datasets: [{
+        data: catValues,
+        backgroundColor: [
+          '#4CAF50', '#2196F3', '#FFC107',
+          '#E91E63', '#9C27B0', '#FF5722', '#607D8B'
+        ]
+      }]
+    },
+    options: {
+      plugins: {
+        legend: { position: 'bottom' },
+        title: { display: true, text: 'Expenses by category' }
+      }
+    }
+  });
+
+  // Bar chart (by month)
+  new Chart(document.getElementById('barChart'), {
+    type: 'bar',
+    data: {
+      labels: monthLabels,
+      datasets: [{
+        label: '₹ per month',
+        data: monthValues,
+        backgroundColor: '#2196F3'
+      }]
+    },
+    options: {
+      scales: { y: { beginAtZero: true } },
+      plugins: {
+        legend: { display: false },
+        title: { display: true, text: 'Monthly expenses' }
+      }
+    }
+  });
+</script>
+
+{% endblock %}

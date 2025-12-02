@@ -1,0 +1,14 @@
+:root { --bg:#0f1217; --card:#161b22; --text:#e6edf3; --muted:#8b949e; --accent:#2ea043; --border:#30363d; }
+* { box-sizing: border-box; }
+body { margin:0; font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); }
+.container { max-width: 980px; margin: 0 auto; padding: 20px; }
+h1, h2 { margin: 0 0 12px; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+.grid.two-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+label { display:block; margin: 10px 0 6px; color: var(--muted); }
+input, select, button { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #0d1117; color: var(--text); }
+button { margin-top: 12px; background: var(--accent); border: none; color: #fff; cursor: pointer; }
+table { width:100%; border-collapse: collapse; }
+thead th { text-align:left; color: var(--muted); border-bottom: 1px solid var(--border); padding: 8px; }
+tbody td { border-bottom: 1px solid var(--border); padding: 8px; }
+@media (max-width: 800px) { .grid.two-columns { grid-template-columns: 1fr; } }
